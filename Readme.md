@@ -39,7 +39,7 @@ Open `Lloyd Customer Churning.ipynb` from the repository root and run all cells.
 
 The notebook calculates metrics from a stratified customer-level 80/20 holdout when it is run. Results from the original row-level workflow are not used as verified results.
 
-The churn label has no documented outcome timestamp in the workbook, so this notebook does **not** claim temporal validation. A production-oriented next step would define a prediction snapshot date and a time-forward validation split. Also select an operational decision threshold using intervention costs rather than assuming 0.5 is optimal.
+The churn label has no documented outcome timestamp in the workbook, so this notebook does **not** claim temporal validation. Login recency uses the latest observed login date in the workbook only as a dataset-derived reference; it is not a proven label cutoff. A production-oriented next step would define a true prediction snapshot date and a time-forward validation split. Also select an operational decision threshold using intervention costs rather than assuming 0.5 is optimal.
 
 ## Data and modeling limitations
 
