@@ -1,0 +1,43 @@
+name: Churn notebook validation
+
+on:
+  push:
+    branches: ["main", "fix/leakage-free-evaluation"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  notebook:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: requirements.txt
+      - name: Install project dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.txt
+      - name: Validate notebook source
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("Lloyd Customer Churning.ipynb")
+          notebook = json.loads(path.read_text(encoding="utf-8"))
+          assert notebook.get("nbformat") == 4
+          code_cells = [
+              "".join(cell.get("source", []))
+              for cell in notebook["cells"]
+              if cell.get("cell_type") == "code"
+          ]
+          for index, source in enumerate(code_cells):
+              compile(source, f"{path}:cell-{index}", "exec")
+          print(f"Notebook JSON and {len(code_cells)} Python cells compile.")
+          PY
+      - name: Execute notebook end to end
+        run: |
+          jupyter nbconvert --to notebook --execute "Lloyd Customer Churning.ipynb" --output /tmp/churn-executed.ipynb
